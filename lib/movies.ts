@@ -3,6 +3,9 @@ import type { FacetItem, Movie } from "@/lib/types";
 import { slugify } from "@/lib/slug";
 
 export const allMovies = movies as Movie[];
+export const englishMovies = allMovies.filter((movie) => movie.languages.includes("English"));
+export const hindiMovies = allMovies.filter((movie) => movie.languages.includes("Hindi") || movie.countries.includes("India"));
+export const recentMovies = allMovies.filter((movie) => movie.releaseDate && movie.releaseDate >= "2020-01-01");
 
 export const moviesBySlug = new Map(allMovies.map((movie) => [movie.slug, movie]));
 
@@ -16,6 +19,16 @@ export function getLatestMovies(limit?: number) {
     const bd = b.releaseDate || "0000-00-00";
     return bd.localeCompare(ad);
   });
+  return typeof limit === "number" ? sorted.slice(0, limit) : sorted;
+}
+
+export function getHindiMovies(limit?: number) {
+  const sorted = [...hindiMovies].sort((a, b) => (b.releaseDate || "").localeCompare(a.releaseDate || ""));
+  return typeof limit === "number" ? sorted.slice(0, limit) : sorted;
+}
+
+export function getEnglishMovies(limit?: number) {
+  const sorted = [...englishMovies].sort((a, b) => (b.releaseDate || "").localeCompare(a.releaseDate || ""));
   return typeof limit === "number" ? sorted.slice(0, limit) : sorted;
 }
 

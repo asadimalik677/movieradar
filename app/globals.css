@@ -11,7 +11,7 @@
 }
 
 body {
-  @apply bg-midnight text-zinc-100 antialiased;
+  @apply bg-[#050507] text-zinc-100 antialiased;
 }
 
 a {
@@ -23,5 +23,19 @@ a {
 }
 
 .cinematic-panel {
-  @apply border border-white/10 bg-white/[0.04] shadow-soft;
+  @apply border border-white/10 bg-white/[0.055] shadow-soft backdrop-blur;
+}
+
+.poster-row {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.28) transparent;
+}
+
+.poster-row::-webkit-scrollbar {
+  height: 8px;
+}
+
+.poster-row::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.24);
 }

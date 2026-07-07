@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import type { Movie } from "@/lib/types";
 
-export const siteName = "Movie Index";
+export const siteName = "MovieRadar";
 export const siteDescription =
-  "Explore verified movie facts, original spoiler-free summaries, cast guides, genres, countries, and related films.";
+  "Discover recent Hindi and English movies with verified basics, original spoiler-free summaries, cast guides, genres, countries, and related films.";
 
 export function siteUrl(path = "") {
   const root = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com";
