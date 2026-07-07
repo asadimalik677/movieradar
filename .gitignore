@@ -3,10 +3,10 @@ out
 node_modules
 .vercel
 .env*.local
+.npm-cache
+work
+outputs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-.npm-cache
-work
-outputs

@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+body {
+  @apply bg-midnight text-zinc-100 antialiased;
+}
+
+a {
+  @apply transition-colors;
+}
+
+::selection {
+  @apply bg-ember text-white;
+}
+
+.cinematic-panel {
+  @apply border border-white/10 bg-white/[0.04] shadow-soft;
+}
