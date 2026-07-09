@@ -1,10 +1,10 @@
-﻿import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 const ENDPOINT = "https://query.wikidata.org/sparql";
 const TARGET_COUNT = 1000;
 const UNAVAILABLE = "Information currently unavailable.";
-const BATCH_SIZE = 100;
+const BATCH_SIZE = 50; // Smaller batches to avoid Wikidata truncation
 
 const listProperties = {
   genres: "P136",
@@ -85,20 +85,34 @@ function idsValues(ids) {
 
 async function sparql(query) {
   const url = `${ENDPOINT}?query=${encodeURIComponent(query)}&format=json`;
-  for (let attempt = 1; attempt <= 4; attempt += 1) {
+  for (let attempt = 1; attempt <= 5; attempt += 1) {
     try {
       const res = await fetch(url, {
         headers: {
           accept: "application/sparql-results+json",
           "user-agent": "MovieIndexProgrammaticSEO/1.0 (https://example.com)"
-        }
+        },
+        signal: AbortSignal.timeout(30000) // 30s timeout
       });
       if (!res.ok) throw new Error(`Wikidata request failed: ${res.status} ${res.statusText}`);
-      const json = await res.json();
+      // Read as text first to catch truncated/malformed JSON safely
+      const text = await res.text();
+      let json;
+      try {
+        json = JSON.parse(text);
+      } catch (parseErr) {
+        console.warn(`JSON parse error on attempt ${attempt}, retrying...`);
+        throw parseErr;
+      }
       return json.results.bindings;
     } catch (error) {
-      if (attempt === 4) throw error;
-      await new Promise((resolve) => setTimeout(resolve, attempt * 1200));
+      if (attempt === 5) {
+        console.warn(`sparql() gave up after 5 attempts: ${error.message}`);
+        return []; // Return empty array instead of crashing
+      }
+      const delay = attempt * 2000;
+      console.warn(`Retry ${attempt}/5 in ${delay}ms: ${error.message}`);
+      await new Promise((resolve) => setTimeout(resolve, delay));
     }
   }
   return [];

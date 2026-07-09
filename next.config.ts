@@ -10,8 +10,24 @@ const nextConfig: NextConfig = {
         hostname: "commons.wikimedia.org"
       },
       {
+        protocol: "http",
+        hostname: "commons.wikimedia.org"
+      },
+      {
         protocol: "https",
         hostname: "upload.wikimedia.org"
+      },
+      {
+        protocol: "http",
+        hostname: "upload.wikimedia.org"
+      },
+      {
+        protocol: "https",
+        hostname: "**.wikimedia.org"
+      },
+      {
+        protocol: "https",
+        hostname: "image.tmdb.org"
       }
     ]
   },
@@ -19,3 +35,4 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
