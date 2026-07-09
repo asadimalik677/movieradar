@@ -7,11 +7,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "generate:data": "node scripts/generate-movies.mjs",
+    "generate:data": "node scripts/scrape-watch-movies.mjs",
     "validate": "npm run build",
     "update:catalog": "node scripts/update-catalog.mjs"
   },
   "dependencies": {
+    "cheerio": "^1.2.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.468.0",
     "next": "^15.0.3",

@@ -28,6 +28,14 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "image.tmdb.org"
+      },
+      {
+        protocol: "https",
+        hostname: "www.watch-movies.com.pk"
+      },
+      {
+        protocol: "https",
+        hostname: "www.movies-watch.com.pk"
       }
     ]
   },
