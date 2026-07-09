@@ -54,6 +54,24 @@ export default async function MoviePage({ params }: { params: Promise<{ slug: st
               <Breadcrumbs items={[{ label: "Movies" }, { label: movie.title }]} />
               <h1 className="text-4xl font-black md:text-6xl">{movie.h1}</h1>
               <p className="mt-5 max-w-3xl text-lg leading-8 text-zinc-300">{movie.overview}</p>
+              
+              {movie.sourceUrl && (
+                <div className="mt-6 flex flex-wrap gap-4">
+                  <a
+                    href={movie.sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer nofollow"
+                    className="inline-flex items-center gap-2 rounded-lg px-8 py-4 font-black text-white text-lg transition-all duration-300 hover:scale-105"
+                    style={{
+                      background: "linear-gradient(135deg, #E50914 0%, #B8070F 100%)",
+                      boxShadow: "0 0 30px rgba(229,9,20,0.45)"
+                    }}
+                  >
+                    🎬 Watch &amp; Download Movie
+                  </a>
+                </div>
+              )}
+
               <dl className="mt-8 grid gap-4 sm:grid-cols-2">
                 <Fact label="Release Date" value={movie.releaseDate} />
                 <Fact label="Runtime" value={movie.runtimeMinutes ? `${movie.runtimeMinutes} minutes` : undefined} />
