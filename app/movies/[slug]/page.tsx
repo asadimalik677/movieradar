@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { AdSlot } from "@/components/ad-slot";
 import { MovieGrid } from "@/components/movie-grid";
+import { MoviePlayer } from "@/components/movie-player";
 import { getMovie, getSimilarMovies, allMovies } from "@/lib/movies";
 import { breadcrumbJsonLd, faqJsonLd, movieJsonLd, movieMetadata, movieUrl, siteUrl } from "@/lib/seo";
 import { slugify } from "@/lib/slug";
@@ -56,19 +57,12 @@ export default async function MoviePage({ params }: { params: Promise<{ slug: st
               <p className="mt-5 max-w-3xl text-lg leading-8 text-zinc-300">{movie.overview}</p>
               
               {movie.sourceUrl && (
-                <div className="mt-6 flex flex-wrap gap-4">
-                  <a
-                    href={movie.sourceUrl}
-                    target="_blank"
-                    rel="noopener noreferrer nofollow"
-                    className="inline-flex items-center gap-2 rounded-lg px-8 py-4 font-black text-white text-lg transition-all duration-300 hover:scale-105"
-                    style={{
-                      background: "linear-gradient(135deg, #E50914 0%, #B8070F 100%)",
-                      boxShadow: "0 0 30px rgba(229,9,20,0.45)"
-                    }}
-                  >
-                    🎬 Watch &amp; Download Movie
-                  </a>
+                <div className="mt-6">
+                  <MoviePlayer
+                    sourceUrl={movie.sourceUrl}
+                    imageUrl={movie.image}
+                    title={movie.title}
+                  />
                 </div>
               )}
 
