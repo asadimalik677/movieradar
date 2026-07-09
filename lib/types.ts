@@ -23,9 +23,10 @@ export type Movie = {
   relatedActors: string[];
   faqs: Array<{ question: string; answer: string }>;
   sourceUrl: string;
-  imdbId?: string;
+  imdbId?: string | null;
   image?: string;
   trendingScore: number;
+  streamingServers?: Array<{ name: string; quality: string; url: string }>;
 };
 
 export type FacetItem = {

@@ -17,6 +17,52 @@ function fetchHtmlWithCurl(url) {
   }
 }
 
+async function fetchStreamingServers(moviePageUrl) {
+  try {
+    const html = fetchHtmlWithCurl(moviePageUrl);
+    if (!html) return [];
+    const $ = cheerio.load(html);
+    
+    const servers = [];
+    const seen = new Set();
+    
+    $('.singcont a[href]').each((i, el) => {
+      const href = $(el).attr('href') || '';
+      const text = $(el).text().trim();
+      if (href && text && href.startsWith('http') && !seen.has(href)) {
+        seen.add(href);
+        
+        // Parse server name and quality from text
+        let serverName = "Unknown";
+        let quality = "";
+        
+        if (/pkspeed|pkembed/i.test(text) || /pkembed/i.test(href)) serverName = "PkSpeed";
+        else if (/mixdrop/i.test(text) || /mixdrop/i.test(href)) serverName = "MixDrop";
+        else if (/clvideo|cloudvideo|do7go/i.test(text) || /do7go/i.test(href)) serverName = "CloudVideo";
+        else if (/streamtape/i.test(text) || /streamtape/i.test(href)) serverName = "Streamtape";
+        else if (/doodstream|dood/i.test(text) || /dood/i.test(href)) serverName = "DoodStream";
+        else if (/filelions/i.test(text) || /filelions/i.test(href)) serverName = "FileLions";
+        
+        if (/720p/i.test(text)) quality = "720p";
+        else if (/480p/i.test(text)) quality = "480p";
+        else if (/360p/i.test(text)) quality = "360p";
+        else if (/1080p/i.test(text)) quality = "1080p";
+        
+        servers.push({
+          name: serverName,
+          quality: quality,
+          url: href
+        });
+      }
+    });
+    
+    return servers;
+  } catch (err) {
+    return [];
+  }
+}
+
+
 async function scrapeMovies() {
   const allMovies = [];
   console.log(`Starting to scrape up to ${PAGES_TO_SCRAPE} pages from watch-movies.com.pk...`);
@@ -45,23 +91,19 @@ async function scrapeMovies() {
       const img = $(el).attr('data-wpfc-original-src') || $(el).attr('src');
 
       if (link && title && img) {
-        // Generate a slug from title
         const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
         
-        // Parse languages from title
         const parsedLanguages = [];
         if (/hindi/i.test(title)) parsedLanguages.push("Hindi");
         if (/punjabi/i.test(title)) parsedLanguages.push("Punjabi");
         if (/english/i.test(title)) parsedLanguages.push("English");
         if (/urdu/i.test(title)) parsedLanguages.push("Urdu");
-        if (parsedLanguages.length === 0) parsedLanguages.push("Hindi", "Urdu"); // default
+        if (parsedLanguages.length === 0) parsedLanguages.push("Hindi", "Urdu");
         
-        // Parse genres from title (e.g. Dubbed, Season, Series, Show)
         const parsedGenres = ["Movie"];
         if (/season|series|show/i.test(title)) parsedGenres.push("TV Show");
         if (/dubbed/i.test(title)) parsedGenres.push("Dubbed");
 
-        // Ensure no duplicates
         if (!allMovies.find(m => m.slug === slug)) {
           allMovies.push({
             id: slug,
@@ -71,7 +113,7 @@ async function scrapeMovies() {
             metaDescription: `Watch ${title} online in HD print quality free download, watch full movie online.`,
             h1: title,
             image: img,
-            overview: `Watch ${title} online. Source: watch-movies.com.pk. High quality print is available.`,
+            overview: `Watch ${title} online in HD print quality. High quality print is available free.`,
             releaseDate: title.match(/\d{4}/) ? title.match(/\d{4}/)[0] : "2024",
             runtimeMinutes: 120,
             genres: parsedGenres,
@@ -88,7 +130,8 @@ async function scrapeMovies() {
             relatedActors: [],
             faqs: [],
             sourceUrl: link,
-            trendingScore: 100 - allMovies.length // Give earlier scraped movies higher trending score
+            imdbId: null, // will be filled below
+            trendingScore: 100 - allMovies.length
           });
           pageMoviesFound++;
         }
@@ -96,10 +139,25 @@ async function scrapeMovies() {
     });
 
     console.log(`Found ${pageMoviesFound} new movies on page ${page}. Total so far: ${allMovies.length}`);
-    
-    // Slight delay to avoid being rate limited
     await new Promise(r => setTimeout(r, 1000));
   }
+
+  // Now fetch streaming server links from each movie detail page
+  console.log(`\nFetching streaming servers from ${allMovies.length} movie pages...`);
+  let serversFound = 0;
+  for (let i = 0; i < allMovies.length; i++) {
+    const movie = allMovies[i];
+    const servers = await fetchStreamingServers(movie.sourceUrl);
+    if (servers.length > 0) {
+      movie.streamingServers = servers;
+      serversFound++;
+    }
+    if ((i + 1) % 10 === 0) {
+      console.log(`Server lookup: ${i + 1}/${allMovies.length} done, ${serversFound} movies with servers`);
+    }
+    await new Promise(r => setTimeout(r, 500));
+  }
+  console.log(`Server extraction complete. Found servers for ${serversFound}/${allMovies.length} movies.`);
 
   // Save to data/movies.json
   const dataDir = path.join(process.cwd(), "data");
@@ -113,3 +171,4 @@ async function scrapeMovies() {
 }
 
 scrapeMovies();
+

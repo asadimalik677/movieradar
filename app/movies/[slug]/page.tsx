@@ -62,6 +62,7 @@ export default async function MoviePage({ params }: { params: Promise<{ slug: st
                     sourceUrl={movie.sourceUrl}
                     imageUrl={movie.image}
                     title={movie.title}
+                    streamingServers={movie.streamingServers}
                   />
                 </div>
               )}
