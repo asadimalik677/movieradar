@@ -208,11 +208,12 @@ function List({ items }: { items: string[] }) {
 }
 
 function Detail({ label, items, base }: { label: string; items: string[]; base?: string }) {
+  const filtered = items.filter(item => !item.startsWith("Unknown"));
   return (
     <div className="rounded border border-white/10 bg-white/5 p-4">
       <h2 className="text-sm font-bold uppercase tracking-wide text-zinc-500">{label}</h2>
       <div className="mt-3 flex flex-wrap gap-2">
-        {items.length ? items.map((item) => base ? (
+        {filtered.length ? filtered.map((item) => base ? (
           <Link key={item} href={`${base}/${slugify(item)}/`} className="rounded bg-white/10 px-2 py-1 text-sm font-medium hover:text-ember">{item}</Link>
         ) : (
           <span key={item} className="rounded bg-white/10 px-2 py-1 text-sm font-medium">{item}</span>

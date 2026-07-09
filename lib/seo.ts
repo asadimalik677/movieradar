@@ -55,17 +55,17 @@ export function movieJsonLd(movie: Movie) {
     countryOfOrigin: movie.countries.length
       ? movie.countries.map((name) => ({ "@type": "Country", name }))
       : undefined,
-    productionCompany: movie.productionCompanies.length
-      ? movie.productionCompanies.map((name) => ({ "@type": "Organization", name }))
+    productionCompany: movie.productionCompanies.filter(n => !n.startsWith("Unknown")).length
+      ? movie.productionCompanies.filter(n => !n.startsWith("Unknown")).map((name) => ({ "@type": "Organization", name }))
       : undefined,
-    director: movie.directors.length
-      ? movie.directors.map((name) => ({ "@type": "Person", name }))
+    director: movie.directors.filter(n => !n.startsWith("Unknown")).length
+      ? movie.directors.filter(n => !n.startsWith("Unknown")).map((name) => ({ "@type": "Person", name }))
       : undefined,
-    author: movie.writers.length
-      ? movie.writers.map((name) => ({ "@type": "Person", name }))
+    author: movie.writers.filter(n => !n.startsWith("Unknown")).length
+      ? movie.writers.filter(n => !n.startsWith("Unknown")).map((name) => ({ "@type": "Person", name }))
       : undefined,
-    actor: movie.cast.length
-      ? movie.cast.map((name) => ({ "@type": "Person", name }))
+    actor: movie.cast.filter(n => !n.startsWith("Unknown")).length
+      ? movie.cast.filter(n => !n.startsWith("Unknown")).map((name) => ({ "@type": "Person", name }))
       : undefined,
     contentRating: movie.ageRating,
     image: movie.image,

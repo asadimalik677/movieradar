@@ -47,11 +47,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...languageFacets.map((item) => `/languages/${item.slug}/`),
     ...yearFacets.map((item) => `/years/${item.slug}/`),
     ...studioFacets.slice(0, 500).map((item) => `/studios/${item.slug}/`)
-  ].map((path) => ({
-    url: siteUrl(path),
-    changeFrequency: "weekly" as const,
-    priority: 0.6
-  }));
+  ]
+    .filter((path) => !path.includes("unknown-cast") && !path.includes("unknown-director") && !path.includes("unknown-studio"))
+    .map((path) => ({
+      url: siteUrl(path),
+      changeFrequency: "weekly" as const,
+      priority: 0.6
+    }));
 
   return [...staticRoutes, ...movieRoutes, ...facetRoutes];
 }

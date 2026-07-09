@@ -77,9 +77,18 @@ export function searchMovies(query: string) {
 }
 
 export function getSimilarMovies(movie: Movie) {
-  return movie.similarMovieSlugs
-    .map((slug) => moviesBySlug.get(slug))
-    .filter((item): item is Movie => Boolean(item));
+  if (movie.similarMovieSlugs && movie.similarMovieSlugs.length > 0) {
+    return movie.similarMovieSlugs
+      .map((slug) => moviesBySlug.get(slug))
+      .filter((item): item is Movie => Boolean(item));
+  }
+  // Dynamic fallback: find movies sharing the same languages or genres
+  return allMovies
+    .filter((m) => m.slug !== movie.slug && (
+      m.languages.some((lang) => movie.languages.includes(lang)) ||
+      m.genres.some((gen) => movie.genres.includes(gen))
+    ))
+    .slice(0, 12);
 }
 
 export function getUpcomingMovies(limit?: number) {
